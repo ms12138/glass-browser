@@ -1,73 +1,60 @@
-// Issues with node package? Rebuild
-// .\node_modules\.bin\electron-rebuild.cmd
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron');
+const path = require('path');
+const url = require('url');
 
-const electron = require('electron')
-// Module to control application life.
-const app = electron.app
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
+let mainWindow;
+let lastAltPressTime = 0;
+const DOUBLE_PRESS_INTERVAL = 300;
 
-const path = require('path')
-const url = require('url')
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    titleBarStyle: 'hidden',
+    frame: false,
+    width: 900,
+    height: 600,
+    transparent: true
+  });
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+  mainWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
 
-
-
-function createWindow () {
-    // Create the browser window.
-    mainWindow = new BrowserWindow({ titleBarStyle: 'hidden', frame: false, width: 900, height: 600, transparent: true });
-
-    // and load the index.html of the app.
-    mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
-        protocol: 'file:',
-        slashes: true
-    }))
-
-    mainWindow.setAlwaysOnTop(true);
-    // mainWindow.setIgnoreMouseEvents(true);
-
-
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
-
-    // Emitted when the window is closed.
-    mainWindow.on('closed', function () {
-        mainWindow = null
-    })
-
-
-    mainWindow.on('minimize',function(event){
-        console.log("Clickthrough disabled");
-        mainWindow.setIgnoreMouseEvents(false);
-    });
-
+  mainWindow.setAlwaysOnTop(true);
+  mainWindow.on('closed', () => { mainWindow = null; });
+  mainWindow.on('minimize', () => { console.log("UI adjustment on minimize"); });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-    // On OS X it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
-        app.quit()
+function registerShortcuts() {
+  // 改用合法组合键，比如 Alt+G
+  const success = globalShortcut.register('Alt+G', () => {
+    const now = Date.now();
+    if (now - lastAltPressTime < DOUBLE_PRESS_INTERVAL) {
+      mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
     }
-})
+    lastAltPressTime = now;
+  });
 
-app.on('activate', function () {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) {
-        createWindow()
-    }
-})
+  if (!success) {
+    console.error('注册 Alt+G 失败，可能已被系统占用');
+  }
+}
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+app.on('ready', () => {
+  createWindow();
+  registerShortcuts();
+});
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('activate', () => {
+  if (mainWindow === null) createWindow();
+  else mainWindow.show(); // 激活时显示窗口
+});
