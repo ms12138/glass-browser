@@ -2,9 +2,9 @@ name: Build Glass Browser
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, trae/solo-agent-VinAGq ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, trae/solo-agent-VinAGq ]
 
 jobs:
   build:
