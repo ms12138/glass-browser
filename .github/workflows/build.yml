@@ -8,28 +8,29 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: '10'
+        node-version: '16'
 
     - name: Install dependencies
       run: |
-        npm install --verbose
-        npm install electron@~1.7.11 --save-dev --verbose
+        npm install -g npm@8
+        npm install
 
     - name: Build for Windows
       run: |
-        npm install electron-packager@12.2.0 -g --verbose
-        electron-packager . "Glass Browser" --platform=win32 --arch=x64 --out=build --verbose
+        npm install electron-packager@14.2.1 -g
+        electron-packager . "Glass Browser" --platform=win32 --arch=x64 --out=build --electron-version=8.5.5
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: glass-browser
         path: build/
