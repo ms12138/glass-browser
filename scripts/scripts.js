@@ -1,10 +1,40 @@
 global.$ = $;
 
 const { remote } = require('electron');
-const { Menu, BrowserWindow, MenuItem, shell } = remote;
+const { Menu, BrowserWindow, MenuItem, shell, app } = remote;
 const fs = require("fs");
+const path = require("path");
+
+// 存储文件路径
+const storagePath = path.join(app.getPath('userData'), 'last_url.json');
 
 
+
+// 读取保存的URL
+function loadLastURL() {
+    try {
+        if (fs.existsSync(storagePath)) {
+            const data = fs.readFileSync(storagePath, 'utf8');
+            const lastURL = JSON.parse(data).url;
+            if (lastURL) {
+                $("#urlField").val(lastURL);
+                loadPage(lastURL);
+            }
+        }
+    } catch (error) {
+        console.error('读取保存的URL失败:', error);
+    }
+}
+
+// 保存URL到本地存储
+function saveURL(url) {
+    try {
+        const data = JSON.stringify({ url: url });
+        fs.writeFileSync(storagePath, data);
+    } catch (error) {
+        console.error('保存URL失败:', error);
+    }
+}
 
 $(document).ready(function () {
 
@@ -12,6 +42,9 @@ $(document).ready(function () {
     webview.addEventListener('dom-ready', function () {
         webview.insertCSS('*::-webkit-scrollbar { width: 0 !important }')
     });
+
+    // 加载最后访问的URL
+    loadLastURL();
 
     // Address bar form
     $("#addressBar").submit(function(e) {
@@ -37,7 +70,12 @@ $(document).ready(function () {
 // Change window Opacity
 // Change window Opacity
 function changeOpacity(opacity){
-    $("body").css('opacity', opacity);
+    // 计算灰度值，透明度越低，灰度越高
+    var grayscale = (1 - opacity) * 100;
+    $("body").css({
+        'opacity': opacity,
+        'filter': 'grayscale(' + grayscale + '%)'
+    });
 }
 
 
@@ -66,9 +104,11 @@ function loadPage(url){
         $("#urlField").val(youtubeURL);
         var webview = document.getElementById('browserView');
         webview.loadURL(youtubeURL);
+        saveURL(youtubeURL);
     }else{
         var webview = document.getElementById('browserView');
         webview.loadURL(url);
+        saveURL(url);
     }
 }
 
@@ -98,7 +138,10 @@ function enableClickThrough(){
 
 remote.BrowserWindow.getFocusedWindow().on('minimize',function(event){
 
-    $("body").css('opacity', 0.95);
+    $("body").css({
+        'opacity': 0.95,
+        'filter': 'grayscale(0%)'
+    });
     $("#transparencyRange").val(0.95)
 
     $("#browserView").removeClass("full-size");
