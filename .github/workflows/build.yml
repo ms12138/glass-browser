@@ -20,10 +20,10 @@ jobs:
         run: npm install
 
       - name: Install electron-packager
-        run: npm install -g electron-packager@15.5.2
+        run: npm install -g electron-packager@14.2.1
 
       - name: Build application
-        run: electron-packager . "Glass Browser" --platform=win32 --arch=x64 --out=build
+        run: electron-packager . GlassBrowser --platform=win32 --arch=x64 --out=build --overwrite
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

@@ -43,8 +43,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       webviewTag: true
-    },
-    icon: path.join(__dirname, 'assets/icon.png')
+    }
   });
 
   mainWindow.setAlwaysOnTop(true);
