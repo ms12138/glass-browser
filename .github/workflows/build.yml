@@ -16,15 +16,17 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14'
+        node-version: '10'
 
     - name: Install dependencies
-      run: npm install
+      run: |
+        npm install --verbose
+        npm install electron@~1.7.11 --save-dev --verbose
 
     - name: Build for Windows
       run: |
-        npm install electron-packager -g
-        electron-packager . "Glass Browser" --platform=win32 --arch=x64 --out=build
+        npm install electron-packager@12.2.0 -g --verbose
+        electron-packager . "Glass Browser" --platform=win32 --arch=x64 --out=build --verbose
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
