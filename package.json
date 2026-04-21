@@ -1,23 +1,42 @@
 {
   "name": "GlassBrowser",
-  "version": "0.5.0",
-  "description": "A floating transparent desktop browser.",
+  "version": "2.0.0",
+  "description": "A modern floating transparent desktop browser",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win --x64",
+    "dev": "electron . --dev"
   },
-  "repository": "https://github.com/mitchas/glass-browser",
+  "repository": "https://github.com/ms12138/glass-browser",
   "keywords": [
     "Floating",
     "Browser",
-    "Windows"
+    "Windows",
+    "Electron"
   ],
-  "author": "Mitch Samuels",
+  "author": "Mitch Samuels & Contributors",
   "devDependencies": {
-    "electron": "~1.7.11",
-    "electron-rebuild": "^1.7.3"
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
   },
-  "dependencies": {
-    "npm-check-updates": "^2.14.2"
+  "build": {
+    "appId": "com.glassbrowser.app",
+    "productName": "Glass Browser",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "assets/icon.ico"
+    }
   }
 }

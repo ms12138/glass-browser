@@ -1,317 +1,291 @@
-@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700");
-.window-chrome {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  width: 100%;
-  height: 40px;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  -webkit-app-region: drag;
-  z-index: 5000;
-  background-color: white;
-  z-index: 5000000;
-  background-color: #0A0F34;
-}
-
-.window-chrome .app-label {
-  display: none;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  padding-left: 15px;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  width: auto;
-  font-weight: 500;
-  text-align: left;
-  font-size: 12px;
-  text-transform: lowercase;
-  color: white;
-}
-
-.window-chrome .window-controls {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-flex: 3;
-      -ms-flex-positive: 3;
-          flex-grow: 3;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  padding-right: 1px;
-}
-
-.window-chrome .window-controls .minimize,
-.window-chrome .window-controls .maximize,
-.window-chrome .window-controls .info,
-.window-chrome .window-controls .close {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  width: 45px;
-  -webkit-app-region: no-drag;
-}
-
-.window-chrome .window-controls .minimize img,
-.window-chrome .window-controls .maximize img,
-.window-chrome .window-controls .info img,
-.window-chrome .window-controls .close img {
-  width: 16px;
-  height: auto;
-  opacity: 0.75;
-  display: block;
-  margin: 0 auto;
-  -webkit-filter: invert(100%);
-          filter: invert(100%);
-}
-
-.window-chrome .window-controls .close:hover {
-  background-color: #E72525;
-  -webkit-transition: 0.15s;
-  transition: 0.15s;
-  opacity: 0.9;
-}
-
-.window-chrome .window-controls .close:hover img {
-  -webkit-filter: invert(100%);
-          filter: invert(100%);
-  opacity: 0.85;
-}
-
-.window-chrome .window-controls .info:hover,
-.window-chrome .window-controls .maximize:hover,
-.window-chrome .window-controls .minimize:hover {
-  -webkit-transition: 0.15s;
-  transition: 0.15s;
-  background-color: #00001e;
-}
-
 * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-decoration: none;
+}
+
+:root {
+  --primary-color: #6366f1;
+  --primary-dark: #4f46e5;
+  --accent-color: #8b5cf6;
+  --background-dark: #0f172a;
+  --background-light: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --hover-bg: rgba(255, 255, 255, 0.1);
+  --danger-color: #ef4444;
+  --success-color: #22c55e;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: rgba(15, 23, 42, 0.15);
+  color: var(--text-primary);
+  transition: opacity 0.3s ease;
 }
 
 *::-webkit-scrollbar {
   width: 0 !important;
+  display: none;
 }
 
-*:hover, *:focus, *:active {
-  outline: none;
+*::-webkit-scrollbar-thumb {
+  display: none;
 }
 
-body {
-  margin: 0;
-  padding: 0px;
-  padding: 2px;
-  font-family: "Open Sans", sans-serif;
-  background-color: rgba(0, 0, 30, 0.15);
-  overflow: hidden;
-  opacity: 0.95;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-}
-
-#browserView {
-  display: block;
+.window-chrome {
+  display: flex;
+  align-items: center;
   width: 100%;
-  height: 100%;
-  height: calc(100vh - 78px) !important;
-  margin-top: 32px;
-  z-index: 5;
-  background-color: white;
+  height: 40px;
+  background: linear-gradient(135deg, var(--background-dark) 0%, var(--background-light) 100%);
+  -webkit-app-region: drag;
+  position: relative;
+  z-index: 10000;
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
 }
 
-#browserView.full-size {
-  height: 100vh !important;
-  margin-top: 0;
+.app-label {
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  gap: 10px;
+  flex: 1;
+}
+
+.app-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.app-label span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-secondary);
+}
+
+.control-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.control-btn:hover {
+  background-color: var(--hover-bg);
+}
+
+.control-btn.info:hover {
+  background-color: rgba(99, 102, 241, 0.2);
+  color: var(--primary-color);
+}
+
+.control-btn.minimize:hover {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: var(--success-color);
+}
+
+.control-btn.maximize:hover {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: var(--accent-color);
+}
+
+.control-btn.close:hover {
+  background-color: rgba(239, 68, 68, 0.3);
+  color: var(--danger-color);
 }
 
 .app-controls {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  position: fixed;
-  top: 42px;
-  left: 2px;
-  z-index: 1000000;
-  background-color: #1167f1;
-  background-color: #0A0F34;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  padding: 0px 15px 0 0;
-  width: 100%;
-  width: calc(100% - 4px);
-  -webkit-box-shadow: 0px 8px 8px 3px rgba(0, 0, 30, 0.1);
-          box-shadow: 0px 8px 8px 3px rgba(0, 0, 30, 0.1);
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  gap: 16px;
+  position: relative;
+  z-index: 9999;
 }
 
-.app-controls #addressBar {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-flex: 3;
-      -ms-flex-positive: 3;
-          flex-grow: 3;
-  margin: 0;
-  margin-right: 35px;
+#addressBar {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
 }
 
-.app-controls #addressBar button {
-  display: inline-block;
-  background-color: transparent;
+#backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   border: none;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-}
-
-.app-controls #addressBar button img {
-  height: 16px;
-  padding: 8px 11px;
-  -webkit-filter: invert(100%);
-          filter: invert(100%);
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-}
-
-.app-controls #addressBar button:hover {
+  background: transparent;
+  color: var(--text-secondary);
   cursor: pointer;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  padding: 8px;
 }
 
-.app-controls #addressBar button:hover img {
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-  opacity: 0.8;
+#backBtn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
 }
 
-.app-controls #addressBar input {
-  display: inline-block;
-  width: 100%;
-  margin: 0;
-  font-size: 15px;
-  padding: 10px 15px 10px 15px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  border: none;
-  border-radius: 2px;
-  color: white;
-  background-color: transparent;
-  background-color: rgba(255, 255, 255, 0.1);
+#backBtn svg {
+  width: 20px;
+  height: 20px;
 }
 
-.app-controls #addressBar input::-moz-selection {
-  background: rgba(255, 255, 255, 0.2);
+#urlField {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: inherit;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  outline: none;
 }
 
-.app-controls #addressBar input::selection {
-  background: rgba(255, 255, 255, 0.2);
+#urlField::placeholder {
+  color: rgba(203, 213, 225, 0.5);
 }
 
-.app-controls #transparencyRange {
-  width: 30%;
-  max-width: 30%;
-  min-width: 30%;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  background-color: transparent;
+#urlField:focus {
+  border-color: var(--primary-color);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.app-controls #clickthroughButton {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  margin: 0;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-  padding: 0;
-  border: none;
-  background-color: transparent;
+.controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.app-controls #clickthroughButton img {
-  height: 24px;
-  padding: 0px 0;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-  opacity: 1;
-  margin-left: 35px;
-}
-
-.app-controls #clickthroughButton:hover {
-  cursor: pointer;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-}
-
-.app-controls #clickthroughButton:hover img {
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-  opacity: 0.8;
-}
-
-input[type=range] {
+.transparency-slider {
+  width: 140px;
+  height: 4px;
   -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.transparency-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  transition: all 0.2s ease;
+}
+
+.transparency-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.6);
+}
+
+.transparency-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+#clickthroughBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  padding: 8px;
+}
+
+#clickthroughBtn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+#clickthroughBtn.active {
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--success-color);
+}
+
+#clickthroughBtn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.browser-webview {
   width: 100%;
-  margin: 0px 0;
+  height: calc(100vh - 104px);
+  display: block;
+  background: white;
+  border: none;
+}
+
+.browser-webview.full-size {
+  height: 100vh;
+  margin-top: -104px;
 }
 
 input[type=range]:focus {
   outline: none;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
+input[type=range]::-moz-range-track {
   height: 4px;
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
-  -webkit-box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-          box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
-  background: white;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-  border-radius: 0px;
-  border: 0px solid #010101;
-}
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
-          box-shadow: 0px 0px 0px rgba(0, 0, 0, 0), 0px 0px 0px rgba(13, 13, 13, 0);
-  border: 0px solid rgba(0, 0, 0, 0);
-  height: 24px;
-  width: 24px;
-  border-radius: 50%;
-  background: #1167f1;
-  background: -webkit-gradient(linear, left top, right top, from(#396afc), to(#2948ff));
-  background: linear-gradient(to right, #396afc, #2948ff);
-  -webkit-box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.3);
-          box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -10px;
 }
-
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: white;
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
-}
-/*# sourceMappingURL=app.css.map */

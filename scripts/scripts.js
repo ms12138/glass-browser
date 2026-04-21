@@ -1,187 +1,163 @@
-global.$ = $;
+const { ipcRenderer } = require('electron');
 
-const { remote } = require('electron');
-const { Menu, BrowserWindow, MenuItem, shell, app } = remote;
-const fs = require("fs");
-const path = require("path");
+let currentOpacity = 0.95;
+let isClickThrough = false;
 
-// 存储文件路径
-const storagePath = path.join(app.getPath('userData'), 'last_url.json');
-
-
-
-// 读取保存的URL
-function loadLastURL() {
-    try {
-        if (fs.existsSync(storagePath)) {
-            const data = fs.readFileSync(storagePath, 'utf8');
-            const lastURL = JSON.parse(data).url;
-            if (lastURL) {
-                $("#urlField").val(lastURL);
-                loadPage(lastURL);
-            }
-        }
-    } catch (error) {
-        console.error('读取保存的URL失败:', error);
-    }
-}
-
-// 保存URL到本地存储
-function saveURL(url) {
-    try {
-        const data = JSON.stringify({ url: url });
-        fs.writeFileSync(storagePath, data);
-    } catch (error) {
-        console.error('保存URL失败:', error);
-    }
-}
-
-$(document).ready(function () {
-
-    var webview = document.getElementById('browserView');
-    webview.addEventListener('dom-ready', function () {
-        webview.insertCSS('*::-webkit-scrollbar { width: 0 !important }')
-    });
-
-    // 加载最后访问的URL
-    loadLastURL();
-
-    // Address bar form
-    $("#addressBar").submit(function(e) {
-        e.preventDefault();
-        loadURL();
-    });
-
-    // Opacity Slider
-    $("#transparencyRange").change(function(){
-        var opacityValue = $(this).val();
-        changeOpacity(opacityValue);
-    });
-
-    // Select all text when changing URL
-    $("input[type='text']").click(function () {
-       $(this).select();
-    });
-
+document.addEventListener('DOMContentLoaded', () => {
+  initElements();
+  initEventListeners();
+  loadInitialSettings();
 });
 
-
-// Change window Opacity
-// Change window Opacity
-// Change window Opacity
-function changeOpacity(opacity){
-    // 计算灰度值，透明度越低，灰度越高
-    var grayscale = (1 - opacity) * 100;
-    $("body").css({
-        'opacity': opacity,
-        'filter': 'grayscale(' + grayscale + '%)'
-    });
-
+function initElements() {
+  const webview = document.getElementById('browserView');
+  const urlField = document.getElementById('urlField');
+  const addressBar = document.getElementById('addressBar');
+  const backBtn = document.getElementById('backBtn');
+  const transparencyRange = document.getElementById('transparencyRange');
+  const clickthroughBtn = document.getElementById('clickthroughBtn');
+  const minimizeBtn = document.getElementById('minimizeBtn');
+  const maximizeBtn = document.getElementById('maximizeBtn');
+  const closeBtn = document.getElementById('closeBtn');
+  const infoBtn = document.getElementById('infoBtn');
+  
+  window.elements = {
+    webview,
+    urlField,
+    addressBar,
+    backBtn,
+    transparencyRange,
+    clickthroughBtn,
+    minimizeBtn,
+    maximizeBtn,
+    closeBtn,
+    infoBtn
+  };
 }
 
+function initEventListeners() {
+  const { webview, urlField, addressBar, backBtn, transparencyRange, clickthroughBtn, minimizeBtn, maximizeBtn, closeBtn, infoBtn } = window.elements;
 
-// App Controls
-// App Controls
-// App Controls
-function loadURL(){
-    var url = $("#urlField").val();
+  addressBar.addEventListener('submit', handleAddressSubmit);
+  backBtn.addEventListener('click', handleBack);
+  transparencyRange.addEventListener('input', handleOpacityChange);
+  clickthroughBtn.addEventListener('click', toggleClickThrough);
+  minimizeBtn.addEventListener('click', () => ipcRenderer.invoke('minimize-window'));
+  maximizeBtn.addEventListener('click', () => ipcRenderer.invoke('maximize-window'));
+  closeBtn.addEventListener('click', () => ipcRenderer.invoke('close-window'));
+  infoBtn.addEventListener('click', () => ipcRenderer.invoke('open-external', 'https://github.com/ms12138/glass-browser'));
 
-    if(url.indexOf("http") >= 0){
-        loadPage(url);
+  webview.addEventListener('dom-ready', handleWebViewReady);
+  webview.addEventListener('did-navigate', handleNavigation);
+  webview.addEventListener('did-finish-load', handleLoadFinished);
 
-    }else{
-        url = "http://" + url;
-        loadPage(url);
+  ipcRenderer.on('load-settings', (event, settings) => {
+    applySettings(settings);
+  });
+}
+
+async function loadInitialSettings() {
+  try {
+    const settings = await ipcRenderer.invoke('get-settings');
+    applySettings(settings);
+  } catch (error) {
+    console.error('Error loading initial settings:', error);
+  }
+}
+
+function applySettings(settings) {
+  const { urlField, transparencyRange, webview } = window.elements;
+
+  if (settings.lastUrl) {
+    urlField.value = settings.lastUrl;
+    loadPage(settings.lastUrl);
+  }
+
+  if (settings.opacity !== undefined) {
+    currentOpacity = settings.opacity;
+    const percentage = Math.round(currentOpacity * 100);
+    transparencyRange.value = percentage;
+    updateOpacity(currentOpacity);
+  }
+}
+
+function handleAddressSubmit(e) {
+  e.preventDefault();
+  const { urlField } = window.elements;
+  let url = urlField.value.trim();
+
+  if (url === '') return;
+
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    if (url.includes('.') && !url.includes(' ')) {
+      url = 'https://' + url;
+    } else {
+      url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
     }
+  }
+
+  urlField.value = url;
+  loadPage(url);
 }
 
-function loadPage(url){
-    console.log("Loading " + url);
-    if (url.toLowerCase().indexOf("youtube.com/watch") >= 0){
-        var youtubeID = url.substring(url.indexOf("v=") + 2);
-        youtubeID = youtubeID.split('&')[0];
-        var youtubeURL = "https://www.youtube.com/embed/" + youtubeID;
+function loadPage(url) {
+  const { webview } = window.elements;
+  try {
+    webview.src = url;
+    ipcRenderer.invoke('save-url', url);
+  } catch (error) {
+    console.error('Error loading page:', error);
+  }
+}
 
-        $("#urlField").val(youtubeURL);
-        var webview = document.getElementById('browserView');
-        webview.loadURL(youtubeURL);
-        saveURL(youtubeURL);
-    }else{
-        var webview = document.getElementById('browserView');
-        webview.loadURL(url);
-        saveURL(url);
+function handleBack() {
+  const { webview } = window.elements;
+  if (webview.canGoBack()) {
+    webview.goBack();
+  }
+}
 
+function handleWebViewReady() {
+  console.log('WebView ready');
+}
+
+function handleNavigation(e) {
+  const { urlField } = window.elements;
+  urlField.value = e.url;
+  ipcRenderer.invoke('save-url', e.url);
+}
+
+function handleLoadFinished() {
+  console.log('Page loaded');
+}
+
+function handleOpacityChange(e) {
+  const percentage = parseInt(e.target.value);
+  currentOpacity = percentage / 100;
+  updateOpacity(currentOpacity);
+  ipcRenderer.invoke('save-settings', { opacity: currentOpacity });
+}
+
+function updateOpacity(opacity) {
+  document.body.style.opacity = opacity;
+}
+
+async function toggleClickThrough() {
+  const { clickthroughBtn, webview } = window.elements;
+  isClickThrough = !isClickThrough;
+  
+  try {
+    await ipcRenderer.invoke('toggle-click-through', isClickThrough);
+    
+    if (isClickThrough) {
+      clickthroughBtn.classList.add('active');
+      webview.classList.add('full-size');
+    } else {
+      clickthroughBtn.classList.remove('active');
+      webview.classList.remove('full-size');
     }
-}
-
-
-
-
-// Go back
-function browserBack(){
-    var webview = document.getElementById('browserView');
-    webview.back;
-
-}
-
-
-function enableClickThrough(){
-    console.log("Clickthrough enabled.")
-    var window = remote.getCurrentWindow();
-    window.setIgnoreMouseEvents(true);
-
-    $("#browserView").addClass("full-size");
-    $(".app-controls").slideUp(200, function(){
-        $(".window-chrome").slideUp(200);
-    });
-
-}
-
-
-remote.BrowserWindow.getFocusedWindow().on('minimize',function(event){
-
-    $("body").css({
-        'opacity': 0.95,
-        'filter': 'grayscale(0%)'
-    });
-
-    $("#transparencyRange").val(0.95)
-
-    $("#browserView").removeClass("full-size");
-    $(".window-chrome").slideDown(200, function(){
-        $(".app-controls").slideDown(200);
-    });
-    // remote.BrowserWindow.getAllWindows().setIgnoreMouseEvents(false);
-
-    console.log("Clickthrough disabled");
-});
-
-
-// Window Controls
-// Window Controls
-// Window Controls
-
-function openWebsite(){
-    shell.openExternal("http://mitch.works/apps/glass");
-}
-function minimizeWindow(){
-    var window = remote.getCurrentWindow();
-    window.minimize();
-}
-var windowIsMaximized = false;
-function maximizeWindow(){
-    var window = remote.getCurrentWindow();
-    const { width, height } = remote.screen.getPrimaryDisplay().workAreaSize;
-    if(windowIsMaximized){
-        windowIsMaximized = false;
-        window.setSize(800, 600);
-    }else{
-        window.setSize(Math.ceil(width * .95), Math.ceil(height * .95));
-        window.setPosition(Math.ceil(width * .025), Math.ceil(height * .025))
-        windowIsMaximized = true;
-    }
-}
-function closeWindow(){
-    var window = remote.getCurrentWindow();
-    window.close();
+  } catch (error) {
+    console.error('Error toggling click-through:', error);
+    isClickThrough = !isClickThrough;
+  }
 }

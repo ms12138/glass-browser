@@ -1,42 +1,68 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Glass Browser</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="styles/vendor/reset.css" rel="stylesheet">
-        <link href="styles/app.css" rel="stylesheet">
-        <script type="text/javascript" src="scripts/jquery.js"></script>
-        <script type="text/javascript" src="scripts/scripts.js"></script>
-
-    </head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glass Browser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="styles/app.css" rel="stylesheet">
+    <script src="scripts/scripts.js" defer></script>
+</head>
 <body>
-
     <div class="window-chrome">
-        <div class="app-label">glass browser</div>
+        <div class="app-label">
+            <img src="assets/icon.png" alt="Glass Browser" class="app-icon">
+            <span>Glass Browser</span>
+        </div>
         <div class="window-controls">
-            <div class="info" onclick="openWebsite()"><img src="assets/ui/info.png"/></div>
-            <div class="maximize" onclick="maximizeWindow()"><img src="assets/ui/maximize.png" /></div>
-            <div class="close" onclick="closeWindow()"><img src="assets/ui/close.png" /></div>
+            <div class="control-btn info" id="infoBtn" title="About">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4"/>
+                    <path d="M12 8h.01"/>
+                </svg>
+            </div>
+            <div class="control-btn minimize" id="minimizeBtn" title="Minimize">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+            </div>
+            <div class="control-btn maximize" id="maximizeBtn" title="Maximize">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="4" width="16" height="16" rx="2"/>
+                </svg>
+            </div>
+            <div class="control-btn close" id="closeBtn" title="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </div>
         </div>
     </div>
 
     <div class="app-controls">
         <form id="addressBar">
-            <button onclick="browserBack()"><img src="assets/ui/back.png" /></button>
-            <input type="text" value="https://www.baidu.com/" id="urlField"/>
+            <button type="button" id="backBtn" title="Go back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5"/>
+                    <path d="M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <input type="text" id="urlField" placeholder="Enter URL...">
         </form>
-        <input type="range" value="0.95" min="0.2" max="1" step="0.05" id="transparencyRange"/>
-        <button onclick="enableClickThrough()" id="clickthroughButton"><img src="assets/ui/eye.png"/></button>
+        <div class="controls-right">
+            <input type="range" id="transparencyRange" min="20" max="100" value="95" class="transparency-slider">
+            <button id="clickthroughBtn" title="Toggle click-through">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 12h8"/>
+                    <path d="M12 8v8"/>
+                </svg>
+            </button>
+        </div>
     </div>
 
-    <webview id="browserView" src="https://www.baidu.com/" style="display:inline-flex; width:100%;"></webview>
-
-
-
-    <script>
-        // You can also require other files to run in this process
-        require('./renderer.js')
-    </script>
+    <webview id="browserView" src="https://www.google.com" class="browser-webview"></webview>
 </body>
 </html>

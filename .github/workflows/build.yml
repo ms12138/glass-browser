@@ -8,34 +8,31 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+        node-version: [ 20.x ]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    - name: Install dependencies
-      run: |
-        npm install -g npm@8
-        npm install
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install Wine for Windows build
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wine64
+      - name: Build application
+        run: npm run build:win
 
-    - name: Build for Windows
-      run: |
-        npm install electron-packager@14.2.1 -g
-        electron-packager . "Glass Browser" --platform=win32 --arch=x64 --out=build --electron-version=8.5.5
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: glass-browser
-        path: build/
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: glass-browser-windows
+          path: dist/
+          if-no-files-found: error

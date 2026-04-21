@@ -1,36 +1,58 @@
-![N|Solid](https://github.com/mitchas/glass-browser/raw/master/assets/icon64.png)
-# **Glass Browser**
-### [Downloads](https://github.com/mitchas/glass-browser/tree/master/releases)
+# Glass Browser
 
-A floating transparent browser for Windows.
-  - Stays on top of other programs and apps.
-  - Adjust transparency.
-  - Click-through mode that ignores clicks and lets you interact with apps behind.
+A modern floating transparent browser for Windows that stays on top of other windows while you work.
 
-![N|Solid](https://github.com/mitchas/glass-browser/raw/master/assets/screenshot.PNG)
+## Features
 
+- **Always on Top**: Floats above all other windows
+- **Adjustable Transparency**: Control how transparent the browser window is
+- **Click-through Mode**: Toggle click-through to interact with windows behind
+- **Keyboard Shortcuts**: Double-press Alt+G to show/hide the window
+- **URL History**: Automatically saves and restores your last visited URL
+- **Modern UI**: Beautiful, clean interface with smooth animations
 
-## Building & running it locally:
-- Clone the repo.
-- cd to the directory
-- make sure electron is installed `npm install electron`
-- install and run with `npm install && npm start`
+## Building & Running Locally
 
-## Packaging it (.app for mac, .exe for windows, or for linux ** Untested on Mac and Linux)
-- Install [Electron Packager Interactive](https://github.com/Urucas/electron-packager-interactive) with `npm install -g electron-packager-interactive`
-- run `epi`
-- Follow steps
-  - Icon is `./assets/icon.ico'
+### Prerequisites
 
-## Using it
-- Enter a URL and hit >Enter
-- Resize and position the window where you want it.
-- Adjust transparency to your liking.
-- Click the eye to enable click-through mode. It will ignore mouse clicks and let you interact with windows below.
-- To disable click-through and interact with the window again, click the icon in the Windows dock/taskbar and minimize it, then click again to open it and it will be disabled.
+- Node.js 18 or higher
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the application:
+   ```bash
+   npm start
+   ```
+
+### Build for Windows:
+```bash
+npm run build:win
+```
 
 ## Keyboard Shortcuts
-- **Double Alt+G**: Show/hide the browser window
+
+| Shortcut | Action |
+|----------|--------|
+| Double Alt+G | Show/hide the browser window |
+
+## Usage
+
+1. **Enter URL**: Type a URL in the address bar and press Enter
+2. **Adjust Transparency**: Use the slider to adjust window transparency
+3. **Click-through**: Click the eye icon to enable click-through mode
+4. **Navigate**: Use the back button to navigate to previous pages
+5. **Window Controls**: Minimize, maximize, or close the window
 
 ## Known Issues
-- Transparency seems to not be working on Linux - but it still floats above other windows.
+
+- Transparency may not work perfectly on all systems
+
+## License
+
+MIT License - feel free to use and modify!
