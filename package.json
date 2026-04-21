@@ -4,19 +4,20 @@
   "description": "一个现代化的浮动透明桌面浏览器",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build:win": "electron-packager . \"Glass Browser\" --platform=win32 --arch=x64 --out=build --overwrite"
+    "start": "electron ."
   },
   "repository": "https://github.com/ms12138/glass-browser",
   "keywords": [
     "Floating",
     "Browser",
-    "Windows",
-    "Electron"
+    "Windows"
   ],
   "author": "Mitch Samuels & Contributors",
   "devDependencies": {
-    "electron": "13.6.9",
-    "electron-packager": "15.5.2"
+    "electron": "~1.7.11",
+    "electron-rebuild": "^1.7.3"
+  },
+  "dependencies": {
+    "npm-check-updates": "^2.14.2"
   }
 }

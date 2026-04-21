@@ -1,8 +1,9 @@
 const { app, BrowserWindow, globalShortcut, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const url = require('url');
 
-let mainWindow = null;
+let mainWindow;
 let isClickThrough = false;
 let lastAltPressTime = 0;
 const DOUBLE_PRESS_INTERVAL = 300;
@@ -33,22 +34,27 @@ function createWindow() {
   const settings = loadSettings();
   
   mainWindow = new BrowserWindow({
+    titleBarStyle: 'hidden',
+    frame: false,
     width: 900,
     height: 600,
-    frame: false,
     transparent: true,
-    alwaysOnTop: true,
     backgroundColor: '#00000000',
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false,
-      webviewTag: true,
-      enableRemoteModule: true
+      webviewTag: true
     },
     icon: path.join(__dirname, 'assets/icon.png')
   });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.setAlwaysOnTop(true);
+  
+  mainWindow.loadURL(url.format({
+    pathname: path.join(__dirname, 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
+
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.send('load-settings', settings);
   });
@@ -56,14 +62,10 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-
-  if (process.argv.includes('--dev')) {
-    mainWindow.webContents.openDevTools();
-  }
 }
 
 function registerShortcuts() {
-  globalShortcut.register('Alt+G', () => {
+  const success = globalShortcut.register('Alt+G', () => {
     const now = Date.now();
     if (now - lastAltPressTime < DOUBLE_PRESS_INTERVAL) {
       if (mainWindow) {
@@ -77,17 +79,15 @@ function registerShortcuts() {
     }
     lastAltPressTime = now;
   });
+
+  if (!success) {
+    console.error('注册 Alt+G 失败，可能已被系统占用');
+  }
 }
 
-app.whenReady().then(() => {
+app.on('ready', () => {
   createWindow();
   registerShortcuts();
-  
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
 });
 
 app.on('will-quit', () => {
@@ -100,38 +100,48 @@ app.on('window-all-closed', () => {
   }
 });
 
-ipcMain.handle('toggle-click-through', (event, enable) => {
-  if (mainWindow) {
-    isClickThrough = enable;
-    mainWindow.setIgnoreMouseEvents(enable, { forward: true });
-    return isClickThrough;
+app.on('activate', () => {
+  if (mainWindow === null) {
+    createWindow();
+  } else {
+    mainWindow.show();
   }
-  return false;
 });
 
-ipcMain.handle('save-url', (event, url) => {
+ipcMain.on('toggle-click-through', (event, enable) => {
+  if (mainWindow) {
+    isClickThrough = enable;
+    mainWindow.setIgnoreMouseEvents(enable);
+    event.returnValue = isClickThrough;
+  } else {
+    event.returnValue = false;
+  }
+});
+
+ipcMain.on('save-url', (event, url) => {
   const settings = loadSettings();
   settings.lastUrl = url;
   saveSettings(settings);
-  return true;
+  event.returnValue = true;
 });
 
-ipcMain.handle('get-settings', () => {
-  return loadSettings();
+ipcMain.on('get-settings', (event) => {
+  event.returnValue = loadSettings();
 });
 
-ipcMain.handle('save-settings', (event, newSettings) => {
+ipcMain.on('save-settings', (event, newSettings) => {
   saveSettings(newSettings);
-  return true;
+  event.returnValue = true;
 });
 
-ipcMain.handle('minimize-window', () => {
+ipcMain.on('minimize-window', (event) => {
   if (mainWindow) {
     mainWindow.minimize();
   }
+  event.returnValue = true;
 });
 
-ipcMain.handle('maximize-window', () => {
+ipcMain.on('maximize-window', (event) => {
   if (mainWindow) {
     if (mainWindow.isMaximized()) {
       mainWindow.unmaximize();
@@ -139,14 +149,17 @@ ipcMain.handle('maximize-window', () => {
       mainWindow.maximize();
     }
   }
+  event.returnValue = true;
 });
 
-ipcMain.handle('close-window', () => {
+ipcMain.on('close-window', (event) => {
   if (mainWindow) {
     mainWindow.close();
   }
+  event.returnValue = true;
 });
 
-ipcMain.handle('open-external', (event, url) => {
+ipcMain.on('open-external', (event, url) => {
   shell.openExternal(url);
+  event.returnValue = true;
 });

@@ -3,29 +3,30 @@ name: Build Glass Browser
 on:
   push:
     branches: [ main, trae/solo-agent-VinAGq ]
-  pull_request:
-    branches: [ main, trae/solo-agent-VinAGq ]
 
 jobs:
   build:
     runs-on: windows-latest
-    
+
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-          
+
       - name: Install dependencies
         run: npm install
-        
+
+      - name: Install electron-packager
+        run: npm install -g electron-packager@15.5.2
+
       - name: Build application
-        run: npm run build:win
-        
-      - name: Upload build artifacts
+        run: electron-packager . "Glass Browser" --platform=win32 --arch=x64 --out=build
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: glass-browser
-          path: build
+          path: build/

@@ -42,10 +42,10 @@ function initEventListeners() {
   backBtn.addEventListener('click', handleBack);
   transparencyRange.addEventListener('input', handleOpacityChange);
   clickthroughBtn.addEventListener('click', toggleClickThrough);
-  minimizeBtn.addEventListener('click', () => ipcRenderer.invoke('minimize-window'));
-  maximizeBtn.addEventListener('click', () => ipcRenderer.invoke('maximize-window'));
-  closeBtn.addEventListener('click', () => ipcRenderer.invoke('close-window'));
-  infoBtn.addEventListener('click', () => ipcRenderer.invoke('open-external', 'https://github.com/ms12138/glass-browser'));
+  minimizeBtn.addEventListener('click', () => ipcRenderer.send('minimize-window'));
+  maximizeBtn.addEventListener('click', () => ipcRenderer.send('maximize-window'));
+  closeBtn.addEventListener('click', () => ipcRenderer.send('close-window'));
+  infoBtn.addEventListener('click', () => ipcRenderer.send('open-external', 'https://github.com/ms12138/glass-browser'));
 
   webview.addEventListener('dom-ready', handleWebViewReady);
   webview.addEventListener('did-navigate', handleNavigation);
@@ -56,9 +56,9 @@ function initEventListeners() {
   });
 }
 
-async function loadInitialSettings() {
+function loadInitialSettings() {
   try {
-    const settings = await ipcRenderer.invoke('get-settings');
+    const settings = ipcRenderer.sendSync('get-settings');
     applySettings(settings);
   } catch (error) {
     console.error('Error loading initial settings:', error);
@@ -104,7 +104,7 @@ function loadPage(url) {
   const { webview } = window.elements;
   try {
     webview.src = url;
-    ipcRenderer.invoke('save-url', url);
+    ipcRenderer.send('save-url', url);
   } catch (error) {
     console.error('Error loading page:', error);
   }
@@ -124,7 +124,7 @@ function handleWebViewReady() {
 function handleNavigation(e) {
   const { urlField } = window.elements;
   urlField.value = e.url;
-  ipcRenderer.invoke('save-url', e.url);
+  ipcRenderer.send('save-url', e.url);
 }
 
 function handleLoadFinished() {
@@ -135,26 +135,28 @@ function handleOpacityChange(e) {
   const percentage = parseInt(e.target.value);
   currentOpacity = percentage / 100;
   updateOpacity(currentOpacity);
-  ipcRenderer.invoke('save-settings', { opacity: currentOpacity });
+  ipcRenderer.send('save-settings', { opacity: currentOpacity });
 }
 
 function updateOpacity(opacity) {
   document.body.style.opacity = opacity;
 }
 
-async function toggleClickThrough() {
+function toggleClickThrough() {
   const { clickthroughBtn, webview } = window.elements;
   isClickThrough = !isClickThrough;
   
   try {
-    await ipcRenderer.invoke('toggle-click-through', isClickThrough);
+    const result = ipcRenderer.sendSync('toggle-click-through', isClickThrough);
     
-    if (isClickThrough) {
-      clickthroughBtn.classList.add('active');
-      webview.classList.add('full-size');
-    } else {
-      clickthroughBtn.classList.remove('active');
-      webview.classList.remove('full-size');
+    if (result) {
+      if (isClickThrough) {
+        clickthroughBtn.classList.add('active');
+        webview.classList.add('full-size');
+      } else {
+        clickthroughBtn.classList.remove('active');
+        webview.classList.remove('full-size');
+      }
     }
   } catch (error) {
     console.error('Error toggling click-through:', error);
