@@ -6,8 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
-    "build:win": "electron-builder --win --x64",
-    "postinstall": "electron-builder install-app-deps"
+    "build:win": "electron-builder --win --x64"
   },
   "repository": "https://github.com/ms12138/glass-browser",
   "keywords": [
@@ -18,8 +17,8 @@
   ],
   "author": "Mitch Samuels & Contributors",
   "devDependencies": {
-    "electron": "^28.3.3",
-    "electron-builder": "^24.13.3"
+    "electron": "22.3.27",
+    "electron-builder": "23.6.0"
   },
   "build": {
     "appId": "com.glassbrowser.app",
@@ -30,26 +29,12 @@
     "files": [
       "**/*",
       "!dist/**",
-      "!node_modules/**/{test,__tests__,tests,powered-test,example,examples}/**",
-      "!node_modules/**/*.d.ts"
+      "!releases/**",
+      "!.git/**"
     ],
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64"]
-        },
-        {
-          "target": "portable",
-          "arch": ["x64"]
-        }
-      ],
+      "target": "nsis",
       "icon": "assets/icon.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": false
     }
   }
 }

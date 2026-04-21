@@ -8,30 +8,25 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ windows-latest ]
-        node-version: [ 18.x ]
-
+    runs-on: windows-latest
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
-
+          node-version: '16'
+          
       - name: Install dependencies
         run: npm install
-
-      - name: Build application
+        
+      - name: Build
         run: npm run build:win
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        
+      - name: Upload
+        uses: actions/upload-artifact@v3
         with:
-          name: glass-browser-windows
-          path: dist/
-          if-no-files-found: error
+          name: glass-browser
+          path: dist
