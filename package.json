@@ -1,13 +1,13 @@
 {
   "name": "GlassBrowser",
   "version": "2.0.0",
-  "description": "A modern floating transparent desktop browser",
+  "description": "一个现代化的浮动透明桌面浏览器",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",
     "build:win": "electron-builder --win --x64",
-    "dev": "electron . --dev"
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": "https://github.com/ms12138/glass-browser",
   "keywords": [
@@ -18,8 +18,8 @@
   ],
   "author": "Mitch Samuels & Contributors",
   "devDependencies": {
-    "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
   },
   "build": {
     "appId": "com.glassbrowser.app",
@@ -29,14 +29,27 @@
     },
     "files": [
       "**/*",
-      "!dist/**"
+      "!dist/**",
+      "!node_modules/**/{test,__tests__,tests,powered-test,example,examples}/**",
+      "!node_modules/**/*.d.ts"
     ],
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
       ],
       "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
     }
   }
 }
