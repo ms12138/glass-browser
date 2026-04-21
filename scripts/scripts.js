@@ -76,6 +76,7 @@ function changeOpacity(opacity){
         'opacity': opacity,
         'filter': 'grayscale(' + grayscale + '%)'
     });
+
 }
 
 
@@ -109,6 +110,7 @@ function loadPage(url){
         var webview = document.getElementById('browserView');
         webview.loadURL(url);
         saveURL(url);
+
     }
 }
 
@@ -142,6 +144,7 @@ remote.BrowserWindow.getFocusedWindow().on('minimize',function(event){
         'opacity': 0.95,
         'filter': 'grayscale(0%)'
     });
+
     $("#transparencyRange").val(0.95)
 
     $("#browserView").removeClass("full-size");
