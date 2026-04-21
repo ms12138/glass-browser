@@ -1,58 +1,58 @@
 # Glass Browser
 
-A modern floating transparent browser for Windows that stays on top of other windows while you work.
+一个现代化的浮动透明浏览器，适用于Windows，可在您工作时始终置顶显示。
 
-## Features
+## 功能特点
 
-- **Always on Top**: Floats above all other windows
-- **Adjustable Transparency**: Control how transparent the browser window is
-- **Click-through Mode**: Toggle click-through to interact with windows behind
-- **Keyboard Shortcuts**: Double-press Alt+G to show/hide the window
-- **URL History**: Automatically saves and restores your last visited URL
-- **Modern UI**: Beautiful, clean interface with smooth animations
+- **始终置顶**：浮动在所有其他窗口之上
+- **可调透明度**：控制浏览器窗口的透明程度
+- **点击穿透模式**：切换点击穿透功能以与后方窗口交互
+- **键盘快捷键**：双击Alt+G显示/隐藏窗口
+- **URL历史记录**：自动保存和恢复您上次访问的URL
+- **现代化UI**：美观、简洁的界面，带有流畅的动画效果
 
-## Building & Running Locally
+## 本地构建和运行
 
-### Prerequisites
+### 前置条件
 
-- Node.js 18 or higher
-- npm or yarn
+- Node.js 18 或更高版本
+- npm 或 yarn
 
-### Installation
+### 安装步骤
 
-1. Clone the repository
-2. Install dependencies:
+1. 克隆仓库
+2. 安装依赖：
    ```bash
    npm install
    ```
-3. Run the application:
+3. 运行应用：
    ```bash
    npm start
    ```
 
-### Build for Windows:
+### 构建Windows版本：
 ```bash
 npm run build:win
 ```
 
-## Keyboard Shortcuts
+## 键盘快捷键
 
-| Shortcut | Action |
-|----------|--------|
-| Double Alt+G | Show/hide the browser window |
+| 快捷键 | 功能 |
+|---------|------|
+| 双击 Alt+G | 显示/隐藏浏览器窗口 |
 
-## Usage
+## 使用方法
 
-1. **Enter URL**: Type a URL in the address bar and press Enter
-2. **Adjust Transparency**: Use the slider to adjust window transparency
-3. **Click-through**: Click the eye icon to enable click-through mode
-4. **Navigate**: Use the back button to navigate to previous pages
-5. **Window Controls**: Minimize, maximize, or close the window
+1. **输入URL**：在地址栏中输入URL并按Enter键
+2. **调整透明度**：使用滑块调整窗口透明度
+3. **点击穿透**：点击眼睛图标启用点击穿透模式
+4. **导航**：使用返回按钮导航到之前的页面
+5. **窗口控制**：最小化、最大化或关闭窗口
 
-## Known Issues
+## 已知问题
 
-- Transparency may not work perfectly on all systems
+- 透明度在某些系统上可能无法完美工作
 
-## License
+## 许可证
 
-MIT License - feel free to use and modify!
+MIT许可证 - 欢迎自由使用和修改！
